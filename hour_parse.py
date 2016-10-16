@@ -15,7 +15,7 @@ for day in DAYS[:7]:
     hours_d[day] = [[] for i in range(9)]
 
 
-print(hours_d)
+##print(hours_d)
 
 pat = r"("
 
@@ -26,7 +26,7 @@ pat = pat [:-1] #to strip the leading "|"
 
 pat += ")s"
 
-print("pat = "+pat)
+#print("pat = "+pat)
 
 pat = re.compile(pat)
 
@@ -42,9 +42,9 @@ def time_to_index(string):
     
     times = []
     for i, s in enumerate((start, end)):
-        print("s = "+s)
+        #print("s = "+s)
         groups = re.match(time_pat, s).groups()
-        print(groups)
+        #print(groups)
         hour = int(groups[0])
 
         if groups[1] == None:
@@ -86,7 +86,7 @@ def generate_availability(text):
 		s = line.split("\t")
 		if len(s) == 2:
 			name, time_string = s[0], s[1]
-			print((name, time_string))
+			#print((name, time_string))
 
 			times = time_string.split(",")
 
@@ -108,7 +108,7 @@ def generate_availability(text):
 							times.append(b)
 							break
 
-			print(times)
+			#print(times)
 
 			#day-day expansion
 			for i, time in enumerate(times):
@@ -125,44 +125,44 @@ def generate_availability(text):
 						b = b_parts[0]
 						suffix = b_parts[1]
 
-					print("suffix = ",suffix)
-					print("a = "+a)
-					print("b = "+b)
+					#print("suffix = ",suffix)
+					#print("a = "+a)
+					#print("b = "+b)
 					a = DAYS.index(a)
 					b = DAYS.index(b)
 					del times[i]
-					print(str(a)+", "+str(b))
+					#print(str(a)+", "+str(b))
 					for n in range(a,b+1):
 						times.append(DAYS[n]+suffix)
 						
-			print(times)
+			#print(times)
 			for i, time in enumerate(times):
 				times[i] = time.strip()
 				if len(time) == 0:
 					continue
-				print("time = "+time)
+				#print("time = "+time)
 				if time in DAYS:
-					print("It's all day")
+					#print("It's all day")
 					#it's an all day affair
 					
 					for n in range(9):
 						if name in hours_d[time][n]:
-								print("WARNING: INSERTING TWICE!!!!!!!!!!!!!!!!!!!!!!!!")
+								#print("WARNING: INSERTING TWICE!!!!!!!!!!!!!!!!!!!!!!!!")
 						hours_d[time][n].append(name)
 				else:
-					print("It's not")
+					#print("It's not")
 					#We need to be picky choosy
 
 					parts = time.split()
 
 					if re.match(time_pat, parts[1]):
-						print("time range = "+str(parts[1]))
+						#print("time range = "+str(parts[1]))
 						time_range = time_to_index(parts[1])
 
 						for n in range(time_range[0], time_range[1]):
-							print("n = "+str(n))
+							#print("n = "+str(n))
 							if name in hours_d[parts[0]][n]:
-								print("WARNING: INSERTING TWICE!!!!!!!!!!!!!!!!!!!!!!!!")
+								#print("WARNING: INSERTING TWICE!!!!!!!!!!!!!!!!!!!!!!!!")
 							hours_d[parts[0]][n].append(name)
 	return hours_d
 	
