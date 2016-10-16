@@ -3,11 +3,7 @@ import random
 import re
 import pprint
 
-f = open("hours_test.txt","r")
 
-hours_raw = f.read()
-
-f.close()
 
 #print(hours_raw)
 
@@ -183,9 +179,17 @@ def generate_schedule(availability):
 			schedule[day].append((hour, name))
 	
 	return schedule
+
+if __name__ == '__main__':
 	
-hours_d = generate_availability(hours_raw)
+	f = open("hours_test.txt","r")
 
-schedule = generate_schedule(hours_d)
+	hours_raw = f.read()
 
-pprint.pprint(schedule)    
+	f.close()
+	
+	hours_d = generate_availability(hours_raw)
+
+	schedule = generate_schedule(hours_d)
+
+	pprint.pprint(schedule)    
