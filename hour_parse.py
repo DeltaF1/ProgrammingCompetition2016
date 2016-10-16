@@ -138,6 +138,7 @@ def generate_availability(text):
 			#print(times)
 			for i, time in enumerate(times):
 				times[i] = time.strip()
+				times[i].replace("\t", "")
 				if len(time) == 0:
 					continue
 				#print("time = "+time)

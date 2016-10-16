@@ -2,6 +2,7 @@ from tkinter import ttk
 from tkinter import *
 from PIL import Image, ImageTk
 import hour_parse
+import pprint
 
 def whenPressed():
     print("yay")
@@ -140,14 +141,15 @@ b2.place(x=60,y=550)
 f3 = ttk.Frame(n)
 
 Lb1 = Listbox(f3)
+"""
 Lb1.insert(1, "Name 1 ")
 Lb1.insert(2, "Name 2")
 Lb1.insert(3, "Name 3 ")
 Lb1.insert(4, "Name 4")
 Lb1.insert(5, "Name 5")
 Lb1.insert(6, "Name 6")
-
-Lb1.place(x=340,y=60)
+"""
+Lb1.place(x=340,y=60,width=200,height=700)
 
 username=StringVar()
 #username.trace("w",callback)
@@ -177,6 +179,18 @@ def gen_schedule():
 	
 	schedule = hour_parse.generate_schedule(tree)
 	
+	days = list(schedule.keys())
+	days.sort()
+	pprint.pprint(schedule)
+	n = 0
+	for day in days:
+		Lb1.insert(n, day)
+		n += 1
+		
+		for time in schedule[day]:
+			s = time[0]+" : "+time[1]
+			Lb1.insert(n, s)
+			n += 1
 	
 b3 = Button(f3, text = "Generate Shift Schedule", command=gen_schedule)
 
