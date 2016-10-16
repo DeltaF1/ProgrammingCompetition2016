@@ -173,7 +173,8 @@ def generate_schedule(availability):
 		schedule[day] = []
 	
 		for n in range(9):
-			hour = (n + 8 ) % 12
+			offset = 5 if day == "overnight" else 8
+			hour = (n + offset) % 12
 			hour = str(hour) + ":30"
 			name = random.choice(availability[day][n])
 			schedule[day].append((hour, name))
