@@ -146,7 +146,7 @@ def generate_availability(text):
 					#it's an all day affair
 					
 					for n in range(9):
-						if name in hours_d[time][n]:
+						#if name in hours_d[time][n]:
 								#print("WARNING: INSERTING TWICE!!!!!!!!!!!!!!!!!!!!!!!!")
 						hours_d[time][n].append(name)
 				else:
@@ -161,7 +161,7 @@ def generate_availability(text):
 
 						for n in range(time_range[0], time_range[1]):
 							#print("n = "+str(n))
-							if name in hours_d[parts[0]][n]:
+							#if name in hours_d[parts[0]][n]:
 								#print("WARNING: INSERTING TWICE!!!!!!!!!!!!!!!!!!!!!!!!")
 							hours_d[parts[0]][n].append(name)
 	return hours_d
