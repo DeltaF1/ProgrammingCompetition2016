@@ -1,3 +1,4 @@
+import math
 import re
 
 f = open("hours_test.txt","r")
@@ -8,14 +9,13 @@ f.close()
 
 #print(hours_raw)
 
-DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "no overnight", "overnight"]
+DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "overnight"]
 
 hours_d = {}
 
-for day in DAYS[:6]:
+for day in DAYS[:7]:
     hours_d[day] = [[] for i in range(9)]
 
-hours_d["overnight"] = []
 
 print(hours_d)
 
@@ -36,15 +36,41 @@ hours_raw = re.sub(pat, r"\1", hours_raw)
 
 hours_raw = re.sub("no overnight", "", hours_raw)
 
-time_pat = re.compile(r"(\d\d):?(\d\d)?((p|a)m)")
+time_pat_str = r"(\d?\d):?(\d\d)?((p|a)m)"
+
+time_pat = re.compile(time_pat_str)
 
 def time_to_index(string):
     parts = string.split("-")
     start, end = parts[0], parts[1]
+    
     times = []
     for i, s in enumerate((start, end)):
+        print("s = "+s)
         groups = re.match(time_pat, s).groups()
         print(groups)
+        hour = int(groups[0])
+
+        if groups[1] == None:
+            minutes = 0
+        else:
+            minutes = int(groups[1])
+        meridian = groups[2]
+
+        minutes = minutes / 60
+
+        #convert to military
+        if meridian == "pm" and hour != 12:
+            hour = hour + 12
+
+        #remove offset to get to 0 index at 8:00
+        hour = hour - 8
+        
+        hour = math.ceil(hour + minutes)
+
+        times.append(int(hour))
+
+    return times[0], times[1] - 1
 
 for line in hours_raw.split("\n"):
     if line.startswith("Employee"):
@@ -78,9 +104,9 @@ for line in hours_raw.split("\n"):
 
         #day-day expansion
         for i, time in enumerate(times):
-            times[i] = item.strip()
-            if "-" in time:
-                del times[i]
+            times[i] = time.strip()
+            if "-" in time and not "m-" in time:
+                
                 parts = time.split("-")
 
                 a,b = parts[0], parts[1]
@@ -90,28 +116,31 @@ for line in hours_raw.split("\n"):
                     b_parts = b.split()
                     b = b_parts[0]
                     suffix = b_parts[1]
-                
+
+                print("suffix = ",suffix)
+                print("a = "+a)
+                print("b = "+b)
                 a = DAYS.index(a)
                 b = DAYS.index(b)
-
-                print(str(a)+" , "+str(b))
+                del times[i]
+                print(str(a)+", "+str(b))
                 for n in range(a,b+1):
                     times.append(DAYS[n]+suffix)
                     
         print(times)
-        for time in times:
-            times[i] = item.strip()
+        for i, time in enumerate(times):
+            times[i] = time.strip()
             if len(time) == 0:
                 continue
             print("time = "+time)
             if time in DAYS:
                 print("It's all day")
                 #it's an all day affair
-                if time == "overnight":
-                    hours_d[time].append(name)
-                else:
-                    for n in range(9):
-                        hours_d[time][n].append(name)
+                
+                for n in range(9):
+                    if name in hours_d[time][n]:
+                            print("WARNING: INSERTING TWICE!!!!!!!!!!!!!!!!!!!!!!!!")
+                    hours_d[time][n].append(name)
             else:
                 print("It's not")
                 #We need to be picky choosy
@@ -119,10 +148,16 @@ for line in hours_raw.split("\n"):
                 parts = time.split()
 
                 if re.match(time_pat, parts[1]):
+                    print("time range = "+str(parts[1]))
                     time_range = time_to_index(parts[1])
 
                     for n in range(time_range[0], time_range[1]):
-                        hours_d[time][n].append(name)
+                        print("n = "+str(n))
+                        if name in hours_d[parts[0]][n]:
+                            print("WARNING: INSERTING TWICE!!!!!!!!!!!!!!!!!!!!!!!!")
+                        hours_d[parts[0]][n].append(name)
+
+def generate_schedule
 
 print(hours_d)
         
