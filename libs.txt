@@ -1,4 +1,6 @@
 Libraries
 ----------
 -Tkinter
--python-docx
+-PIL
+-smtplib
+-zipfile

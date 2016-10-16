@@ -1,6 +1,7 @@
 from tkinter import ttk
 from tkinter import *
 from PIL import Image, ImageTk
+import hour_parse
 
 def whenPressed():
     print("yay")
@@ -164,7 +165,23 @@ Label(f3,text="Name:").place(x=20,y=150)
 Label(f3, text="Shift:").place(x=20, y=180)
 b1=Button(f3, text="Enter",command=whenPressed)
 b2=Button(f3,text="Cancel", command=close_window)
+def gen_schedule():
+	#OPEN FROM DOCX!
+	f = open("hours_test.txt")
+	
+	text = f.read()
+	
+	f.close()
+	
+	tree = hour_parse.generate_availability(text)
+	
+	schedule = hour_parse.generate_schedule(tree)
+	
+	
+b3 = Button(f3, text = "Generate Shift Schedule", command=gen_schedule)
 
+
+	
 e1=Entry(f3,textvariable=username)
 e2=Entry(f3,textvariable=userpassword)
 
@@ -173,7 +190,7 @@ e1.place(x=90, y=150)
 e2.place(x=90,y=180)
 b1.place(x=20,y=550)
 b2.place(x=60,y=550)
-
+b3.place(x=200, y = 180)
 
 n.add(f3, text='Shift Schedule')
 #b_shift = Button(root, text="Shift Schedule", command=work_schedule)
