@@ -1,5 +1,6 @@
 from tkinter import ttk
 from tkinter import *
+from tkinter import messagebox
 from PIL import Image, ImageTk
 import hour_parse
 import pprint
@@ -66,6 +67,10 @@ Lb1.insert(5, "Food")
 Lb1.insert(6, "Food")
 
 Lb1.place(x=340,y=60)"""
+food = 'apples'
+def do_alert():
+    messagebox.showwarning("Stock Alert", "The stock for " + food + " is getting low.")
+
 
 
 username=StringVar()
@@ -84,6 +89,7 @@ Label(f1,text="Food Item:").place(x=20,y=150)
 Label(f1, text="Quantity:").place(x=20, y=180)
 b1=Button(f1, text="Enter",command=whenPressed)
 b2=Button(f1,text="Cancel", command=close_window)
+b3 = Button(f1, text="Alert", command=do_alert)
 
 e1=Entry(f1,textvariable=username)
 e2=Entry(f1,textvariable=userpassword)
@@ -93,6 +99,7 @@ e1.place(x=90, y=150)
 e2.place(x=90,y=180)
 b1.place(x=20,y=550)
 b2.place(x=60,y=550)
+b3.place(x=100, y=200)
 
 f2 = ttk.Frame(n)   # second page
 
