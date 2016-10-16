@@ -1,5 +1,7 @@
 import math
+import random
 import re
+import pprint
 
 f = open("hours_test.txt","r")
 
@@ -32,9 +34,7 @@ print("pat = "+pat)
 
 pat = re.compile(pat)
 
-hours_raw = re.sub(pat, r"\1", hours_raw)
 
-hours_raw = re.sub("no overnight", "", hours_raw)
 
 time_pat_str = r"(\d?\d):?(\d\d)?((p|a)m)"
 
@@ -72,92 +72,120 @@ def time_to_index(string):
 
     return times[0], times[1] - 1
 
-for line in hours_raw.split("\n"):
-    if line.startswith("Employee"):
-        continue
-    s = line.split("\t")
-    if len(s) == 2:
-        name, time_string = s[0], s[1]
-        print((name, time_string))
+def generate_availability(text):
+	hours_d = {}
 
-        times = time_string.split(",")
+	for day in DAYS[:7]:
+		hours_d[day] = [[] for i in range(9)]
+	
+	#Convert 'Mondays' to Monday
+	text = re.sub(pat, r"\1", text)
+	
+	#no overnight is redundant, remove it
+	text = re.sub("no overnight", "", text)
+		
+	for line in text.split("\n"):
+		if line.startswith("Employee"):
+			continue
+		s = line.split("\t")
+		if len(s) == 2:
+			name, time_string = s[0], s[1]
+			print((name, time_string))
 
-        for i, item in enumerate(times):
-            times[i] = item.strip()
-            day_count = 0
-            for day in DAYS:
-                if day in item:
-                    day_count += 1
+			times = time_string.split(",")
 
-                    if day_count > 1:
-                        # i = len(times)
-                        index = item.index(day)
-                        if item[index] == "o" and "no" in item or item[index-1]=="-":
-                            continue
-                        a = item[0:index]
-                        b = item[index:]
-                        times[i] = a
-                        times.append(b)
-                        break
+			for i, item in enumerate(times):
+				times[i] = item.strip()
+				day_count = 0
+				for day in DAYS:
+					if day in item:
+						day_count += 1
 
-        print(times)
+						if day_count > 1:
+							# i = len(times)
+							index = item.index(day)
+							if item[index] == "o" and "no" in item or item[index-1]=="-":
+								continue
+							a = item[0:index]
+							b = item[index:]
+							times[i] = a
+							times.append(b)
+							break
 
-        #day-day expansion
-        for i, time in enumerate(times):
-            times[i] = time.strip()
-            if "-" in time and not "m-" in time:
-                
-                parts = time.split("-")
+			print(times)
 
-                a,b = parts[0], parts[1]
-                suffix = ""
-                if " " in b:
-                    #if there is stuff after the second day
-                    b_parts = b.split()
-                    b = b_parts[0]
-                    suffix = b_parts[1]
+			#day-day expansion
+			for i, time in enumerate(times):
+				times[i] = time.strip()
+				if "-" in time and not "m-" in time:
+					
+					parts = time.split("-")
 
-                print("suffix = ",suffix)
-                print("a = "+a)
-                print("b = "+b)
-                a = DAYS.index(a)
-                b = DAYS.index(b)
-                del times[i]
-                print(str(a)+", "+str(b))
-                for n in range(a,b+1):
-                    times.append(DAYS[n]+suffix)
-                    
-        print(times)
-        for i, time in enumerate(times):
-            times[i] = time.strip()
-            if len(time) == 0:
-                continue
-            print("time = "+time)
-            if time in DAYS:
-                print("It's all day")
-                #it's an all day affair
-                
-                for n in range(9):
-                    if name in hours_d[time][n]:
-                            print("WARNING: INSERTING TWICE!!!!!!!!!!!!!!!!!!!!!!!!")
-                    hours_d[time][n].append(name)
-            else:
-                print("It's not")
-                #We need to be picky choosy
+					a,b = parts[0], parts[1]
+					suffix = ""
+					if " " in b:
+						#if there is stuff after the second day
+						b_parts = b.split()
+						b = b_parts[0]
+						suffix = b_parts[1]
 
-                parts = time.split()
+					print("suffix = ",suffix)
+					print("a = "+a)
+					print("b = "+b)
+					a = DAYS.index(a)
+					b = DAYS.index(b)
+					del times[i]
+					print(str(a)+", "+str(b))
+					for n in range(a,b+1):
+						times.append(DAYS[n]+suffix)
+						
+			print(times)
+			for i, time in enumerate(times):
+				times[i] = time.strip()
+				if len(time) == 0:
+					continue
+				print("time = "+time)
+				if time in DAYS:
+					print("It's all day")
+					#it's an all day affair
+					
+					for n in range(9):
+						if name in hours_d[time][n]:
+								print("WARNING: INSERTING TWICE!!!!!!!!!!!!!!!!!!!!!!!!")
+						hours_d[time][n].append(name)
+				else:
+					print("It's not")
+					#We need to be picky choosy
 
-                if re.match(time_pat, parts[1]):
-                    print("time range = "+str(parts[1]))
-                    time_range = time_to_index(parts[1])
+					parts = time.split()
 
-                    for n in range(time_range[0], time_range[1]):
-                        print("n = "+str(n))
-                        if name in hours_d[parts[0]][n]:
-                            print("WARNING: INSERTING TWICE!!!!!!!!!!!!!!!!!!!!!!!!")
-                        hours_d[parts[0]][n].append(name)
+					if re.match(time_pat, parts[1]):
+						print("time range = "+str(parts[1]))
+						time_range = time_to_index(parts[1])
 
-def generate_schedule
+						for n in range(time_range[0], time_range[1]):
+							print("n = "+str(n))
+							if name in hours_d[parts[0]][n]:
+								print("WARNING: INSERTING TWICE!!!!!!!!!!!!!!!!!!!!!!!!")
+							hours_d[parts[0]][n].append(name)
+	return hours_d
+	
+def generate_schedule(availability):
+	schedule = {}
+	
+	for day in DAYS:
+		schedule[day] = []
+	
+		for n in range(9):
+			hour = (n + 8 ) % 12
+			hour = str(hour) + ":30"
+			name = random.choice(availability[day][n])
+			schedule[day].append((hour, name))
+	
+	return schedule
+	
+hours_d = generate_availability(hours_raw)
 
-print(hours_d)
-        
+schedule = generate_schedule(hours_d)
+
+pprint.pprint(schedule)    
